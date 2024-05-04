@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversion Value Calculator</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <style>
+    .roboto-light {
+      font-family: "Roboto", sans-serif;
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    .roboto-regular {
+      font-family: "Roboto", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    .roboto-bold {
+      font-family: "Roboto", sans-serif;
+      font-weight: 700;
+      font-style: normal;
+    }
+  </style>
+</head>
+<body>
+  <main class="container vh-100">
+    <div class="row vh-100">
+      <div class="col-12 m-auto">
+        <div class="row text-center">
+          <h1 class="roboto-bold mb-5">Conversion Value Calculator</h1>
+          <div class="col-6 col-xs-12 m-auto">
+            <div class="p-3 rounded border border-1 shadow">
+              <div id="stageDiv">
+                <h3 class="roboto-bold mt-3">Stage</h3>
+                <h6 class="roboto-light">
+                  This is a lead paragraph. It stands out from regular paragraphs.
+                </h6>
+                <input type="text" class="form-control" id="stageInput" name="stageInput">
+                <button class="mt-3 btn btn-outline-secondary btn-lg" type="button" id="stageSubmit">Submit</button>
+              </div>
+
+              <div id="crDiv" style="display: none;">
+                <h3 class="roboto-bold mt-3">Conversion rate</h3>
+                <h6 class="roboto-light">
+                  This is a lead paragraph. It stands out from regular paragraphs.
+                </h6>
+                <div class="input-group mt-3">
+                  <input type="number" class="form-control" id="crInput" name="crInput" min="0" max="100">
+                  <span class="input-group-text">%</span>
+                </div>
+                <button class="mt-3 btn btn-outline-secondary btn-lg" type="button" id="crSubmit">Submit</button>
+              </div>
+
+              <div id="addStageDiv" style="display: none;">
+                <h3 class="roboto-bold mt-3">Add another stage</h3>
+                <h6 class="roboto-light">
+                  This is a lead paragraph. It stands out from regular paragraphs.
+                </h6>
+                <button class="mt-3 btn btn-outline-success btn-lg" type="button" id="yesAddStageSubmit">Yes</button>
+                <button class="mt-3 btn btn-outline-warning btn-lg" type="button" id="noAddStageSubmit">No</button>
+              </div>
+
+              <div id="saleDiv" style="display: none;">
+                <h3 class="roboto-bold mt-3">Sale</h3>
+                <h6 class="roboto-light">
+                  This is a lead paragraph. It stands out from regular paragraphs.
+                </h6>
+                <div class="input-group mt-3">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="saleInput" name="saleInput" min="0" max="100">
+                </div>
+                <button class="mt-3 btn btn-outline-secondary btn-lg" type="button" id="saleSubmit">Submit</button>
+              </div>
+
+            </div>
+          </div>
+          <div class="col-6 col-xs-12 m-auto" style="max-height: 70vh; overflow-y: auto;">
+            <div id="cvDiv" class="row px-3 py-5 rounded border border-1 shadow align-items-center justify-content-center">
+              <div class="col-10 rounded border border-1 p-3" id="initStageDiv1">
+                <h4 class="roboto-light mb-0" id="initStage1">Stage</h4>
+              </div>
+              <div class="col-6 rounded border border-1 p-3 mt-3" id="initCrDiv1">
+                <p class="roboto-light mb-0" id="initCr1">Conversion Rate (%)</p>
+              </div>
+              <div class="col-10 rounded border border-1 p-3 mt-3" id="initStageDiv2">
+                <h4 class="roboto-light mb-0" id="initStage2">Stage</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    let count = 1;
+    let crCount = 1;
+    let initStage1 = false
+    let initStage2 = false
+    // let initCr = false
+    let sale;
+    let stageArr = [];
+    let crArr = [];
+    
+    $( document ).ready(function() {
+      $('#stageSubmit').click(() => {
+        let stage = $('#stageInput').val()
+        stageArr.push(stage)
+        if (!initStage1) {
+          $('#initStage1').html(stage)
+          initStage1 = true
+          count++
+        }
+        else if (!initStage2) {
+          $('#initStage2').html(stage)
+          initStage2 = true
+          $('#crDiv').show()
+          $('#stageDiv').hide()
+          count++
+        }
+        else {
+          $(`#initStage${count}`).html(stage)
+          $('#crDiv').show()
+          $('#stageDiv').hide()
+          count++
+        }
+        $('#stageInput').val('')
+      })
+
+      $('#crSubmit').click(() => {
+        let cr = $('#crInput').val()
+        crArr.push(parseFloat(cr)/100)
+        $(`#initCr${crCount}`).html(`${cr}% Conversion Rate`)
+        $('#addStageDiv').show()
+        $('#crDiv').hide()
+        crCount++
+        $('#crInput').val('')
+      })
+
+      $('#yesAddStageSubmit').click(() => {
+        $('#stageDiv').show()
+        $('#cvDiv').append(`
+          <div class="col-6 rounded border border-1 p-3 mt-3" id="initCrDiv${crCount}">
+            <p class="roboto-light mb-0" id="initCr${crCount}">Conversion Rate (%)</p>
+          </div>
+          <div class="col-10 rounded border border-1 p-3 mt-3" id="initStageDiv${count}">
+            <h4 class="roboto-light mb-0" id="initStage${count}">Stage</h4>
+          </div>
+        `)
+        $('#addStageDiv').hide()
+      });
+
+      $('#noAddStageSubmit').click(() => {
+        console.log('No')
+        $('#saleDiv').show()
+        $('#addStageDiv').hide()
+        // Start Calc here
+      });
+
+      $('#saleSubmit').click(() => {
+        sale = $('#saleInput').val()
+        $('#cvDiv').append(`
+          <div class="col-10 rounded border border-1 p-3 mt-3">
+            <h5 class="roboto-bold mb-0 text-success">$ ${sale}</h5>
+          </div>
+        `)
+        let cvArr = [];
+        let currVal = null;
+        crArr = crArr.reverse()
+        crArrL = crArr.length
+        crArr.forEach((crItem, i) => {
+          
+          console.log(crArrL)
+          if (currVal) {
+            currVal = currVal * crItem
+          }
+          else {
+            currVal = sale * crItem
+          }
+          console.log(currVal, crItem)
+          $(`#initStageDiv${crArrL}`).append(`
+              <h5 class="roboto-bold mb-0 text-success">Average Conversion Value - $${currVal.toFixed(2)}</h5>
+          `)
+          crArrL--
+        });
+
+        $('#saleInput').prop("disabled", true);
+        $('#saleSubmit').prop("disabled", true);
+        
+      })
+
+      
+    });
+  </script>
+</body>
+</html>
